@@ -25,19 +25,17 @@ def load_data(file="~/Documents/BeCode/Projects/DL-wine-quality/data/wine.csv"):
     X = X.values
     min_max_scaler = preprocessing.MinMaxScaler()
     X_scaled = min_max_scaler.fit_transform(X)
-    X_scaled = pd.DataFrame(X_scaled, columns=columns_names).values
+    X_scaled = pd.DataFrame(X_scaled, columns=columns_names)
 
     target = pd.DataFrame(wine["quality"])
-
     target = pd.get_dummies(target["quality"])
-    #target["0"] = 0
-    #target["1"] = 0
-    #target["2"] = 0
-    #target["10"] = 0
-    target = target.values
 
-    trainset = torch.Tensor(X_scaled)
-    testset = torch.Tensor(target)
+    wine = pd.concat([X_scaled, target], axis = 1).values
+
+    index = int(wine.shape[0] * 0.8)
+
+    trainset = torch.Tensor(wine[:index])
+    testset = torch.Tensor(wine[index:])
 
     return trainset, testset
 
@@ -211,5 +209,5 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
 
 
 if __name__ == "__main__":
-        # You can change the number of GPUs per trial here:
+    # You can change the number of GPUs per trial here:
     main(num_samples=10, max_num_epochs=10, gpus_per_trial=0)
